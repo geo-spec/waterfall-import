@@ -3,10 +3,12 @@
 import React from 'react'
 import ActionDone from 'material-ui/svg-icons/action/done'
 import ActionImport from 'material-ui/svg-icons/communication/import-export'
-import {List, ListItem} from 'material-ui/List'
+import {List, ListItem, makeSelectable} from 'material-ui/List'
 
 import Subheader from 'material-ui/Subheader'
 import Client from '../containers/Client'
+
+let SelectableList = makeSelectable(List);
 
 require('styles//Import.css')
 
@@ -58,8 +60,23 @@ class ImportComponent extends React.Component {
         files_already_imported: result.files_already_imported
       }
     )
+  }
 
+  handleChangeForImport = (event, index) =>  {
+    let is_importing = confirm('Начать импортирование файла ' +  index + '?');
+    if (is_importing) {
+      console.log('File importing')
+      //post запрос и, возможно, отображение процесса импорта
+    }
+  }
 
+  handleChangeAlreadyImported = (event, index) => {
+    let is_redirecting = confirm('Перейти на страницу с разметкой файла ' +  index + '?');
+    if (is_redirecting) {
+      console.log('Redirecting')
+     // Router.browserHistory.push('/somepath');
+      //post запрос и, возможно, отображение процесса импорта
+    }
 
   }
 
@@ -67,26 +84,26 @@ class ImportComponent extends React.Component {
     return (
       <div className="import">
         <div className="files-for-import list">
-          <List>
+          <SelectableList onChange={this.handleChangeForImport}>
             <Subheader>Файлы для импорта</Subheader>
 
             { this.state.files_for_import.map((key, index) => (
-               <ListItem value={index} primaryText={key} key={key} rightIcon={<ActionImport />} />
+               <ListItem value={key} primaryText={key} key={index} rightIcon={<ActionImport />} />
             ))
             }
 
-          </List>
+          </SelectableList>
         </div>
         <div className="already-imported list">
-          <List>
+          <SelectableList onChange={this.handleChangeAlreadyImported}>
             <Subheader>Импортированные файлы</Subheader>
             {
               this.state.files_already_imported.map((key, index) => (
-                <ListItem value={index} primaryText={key} key={key} rightIcon={<ActionDone />} />
+                <ListItem value={key} primaryText={key} key={index} rightIcon={<ActionDone />} />
             ))
             }
 
-          </List>
+          </SelectableList>
         </div>
       </div>
     );
